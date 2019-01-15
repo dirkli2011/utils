@@ -22,7 +22,7 @@ func TestDate(t *testing.T) {
 
 	for _, v := range testData {
 
-		Convey("test", t, func() {
+		Convey("日期单元测试", t, func() {
 			So(DateToTime(v.input), ShouldEqual, v.expect)
 			So(TimeToDate(v.expect), ShouldEqual, strings.Split(v.input, " ")[0])
 		})

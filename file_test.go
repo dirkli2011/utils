@@ -6,13 +6,12 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-// 单元测试
 func TestFile(t *testing.T) {
 	path := "/tmp/test/"
 	filename := "test.txt"
 	filecontent := "hello world"
 
-	Convey("test", t, func() {
+	Convey("文件单元测试", t, func() {
 		So(RemoveFile(path+filename+".copy"), ShouldEqual, true)
 		_, err := FilePutContent(path+filename, []byte(filecontent))
 		So(MkdirAll(path), ShouldEqual, nil)
