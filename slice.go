@@ -32,6 +32,7 @@ func InSliceWithError(s interface{}, v interface{}) (exist bool, err error) {
 	return
 }
 
+// 判存
 func InSlice(s interface{}, v interface{}) bool {
 	exist, _ := InSliceWithError(s, v)
 	return exist
@@ -67,6 +68,7 @@ func UniqWithError(s interface{}) (r interface{}, err error) {
 	return vs.Slice(0, j).Interface(), nil
 }
 
+// 排重
 func Uniq(s interface{}) interface{} {
 	r, err := UniqWithError(s)
 	if err != nil {
