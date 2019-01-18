@@ -57,6 +57,11 @@ func GetBasename(path string) string {
 	return filepath.Base(path)
 }
 
+// 返回路径
+func GetDir(path string) string {
+	return filepath.Dir(path)
+}
+
 // 创建文件夹
 func MkdirAll(path string) error {
 	if !IsExist(path) {

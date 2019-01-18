@@ -1,8 +1,14 @@
 package utils
 
 import (
+	"fmt"
 	"reflect"
 )
+
+// 任意类型转换为string
+func ToString(v interface{}) string {
+	return fmt.Sprintf("%v", v)
+}
 
 // 判断变量是否为空
 func IsEmpty(v interface{}) bool {
