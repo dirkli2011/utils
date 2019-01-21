@@ -14,7 +14,7 @@ func init() {
 
 	logType = os.Getenv("logkit.type")
 	if logType == "" {
-		logType = "file"
+		logType = "std"
 	}
 
 	logPath = os.Getenv("logkit.path")

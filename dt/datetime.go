@@ -1,11 +1,11 @@
 // 日期转换
-package utils
+package dt
 
 import (
 	"time"
 )
 
-func DateToTime(date string) int64 {
+func Time(date string) int64 {
 	format := "2006-01-02 15:04:05"
 	nFormat := format[0:len(date)]
 
@@ -18,7 +18,7 @@ func DateToTime(date string) int64 {
 	return stime.Unix()
 }
 
-func TimeToDate(timestamp int64, f ...string) string {
+func Date(timestamp int64, f ...string) string {
 	if timestamp <= 0 {
 		return ""
 	}

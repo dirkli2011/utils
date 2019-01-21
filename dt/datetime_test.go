@@ -1,4 +1,4 @@
-package utils
+package dt
 
 import (
 	"math/rand"
@@ -23,8 +23,8 @@ func TestDate(t *testing.T) {
 	for _, v := range testData {
 
 		Convey("日期单元测试", t, func() {
-			So(DateToTime(v.input), ShouldEqual, v.expect)
-			So(TimeToDate(v.expect), ShouldEqual, strings.Split(v.input, " ")[0])
+			So(Time(v.input), ShouldEqual, v.expect)
+			So(Date(v.expect), ShouldEqual, strings.Split(v.input, " ")[0])
 		})
 	}
 
@@ -34,7 +34,7 @@ func TestDate(t *testing.T) {
 func BenchmarkDate(b *testing.B) {
 	t := 1293811300
 	for i := 0; i < b.N; i++ {
-		TimeToDate(int64(t+rand.Intn(i+1)), "2006-01-02 15:04:05")
+		Date(int64(t+rand.Intn(i+1)), "2006-01-02 15:04:05")
 	}
 }
 
@@ -42,7 +42,7 @@ func BenchmarkDate(b *testing.B) {
 func BenchmarkDateParallel(b *testing.B) {
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
-			TimeToDate(1293811300)
+			Date(1293811300)
 		}
 	})
 }

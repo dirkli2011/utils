@@ -1,4 +1,4 @@
-package utils
+package file
 
 import (
 	"errors"
@@ -10,10 +10,25 @@ import (
 	"golang.org/x/sys/unix"
 )
 
+// 获取当前路径
+func SelfPath() string {
+	path, _ := filepath.Abs(os.Args[0])
+	return path
+}
+
+// 获取当前目录
+func SelfDir() string {
+	return Dir(SelfPath())
+}
+
 // 判断文件或目录是否存在
-func IsExist(path string) bool {
-	_, err := os.Stat(path)
-	return err == nil || os.IsExist(err)
+func Exist(path string) bool {
+	if _, err := os.Stat(path); err != nil {
+		if os.IsNotExist(err) {
+			return false
+		}
+	}
+	return true
 }
 
 // 判断是否为文件
@@ -44,7 +59,7 @@ func IsWritable(path string) bool {
 }
 
 // 获取文件名后缀,不包括.
-func GetExt(file string) string {
+func Ext(file string) string {
 	f := filepath.Ext(file)
 	if f == "" {
 		return f
@@ -53,18 +68,18 @@ func GetExt(file string) string {
 }
 
 // 返回路径的文件名
-func GetBasename(path string) string {
+func Basename(path string) string {
 	return filepath.Base(path)
 }
 
 // 返回路径
-func GetDir(path string) string {
+func Dir(path string) string {
 	return filepath.Dir(path)
 }
 
 // 创建文件夹
 func MkdirAll(path string) error {
-	if !IsExist(path) {
+	if !Exist(path) {
 		err := os.MkdirAll(path, 0755)
 		if err != nil {
 			return err
@@ -78,7 +93,7 @@ func MkdirAll(path string) error {
 }
 
 // 写文件
-func FilePutContent(file string, content []byte) (int, error) {
+func PutContent(file string, content []byte) (int, error) {
 	err := MkdirAll(filepath.Dir(file))
 	if err != nil {
 		return 0, err
@@ -93,7 +108,7 @@ func FilePutContent(file string, content []byte) (int, error) {
 }
 
 // 读文件
-func FileGetContent(file string) ([]byte, error) {
+func GetContent(file string) ([]byte, error) {
 	f, err := os.Open(file)
 	if err != nil {
 		return nil, err
@@ -103,7 +118,7 @@ func FileGetContent(file string) ([]byte, error) {
 }
 
 // 文件拷贝
-func CopyFile(src, dst string) error {
+func Copy(src, dst string) error {
 	// 软链文件，指向原始文件
 	linfo, err := os.Readlink(src)
 	if err == nil || len(linfo) > 0 {
@@ -128,7 +143,7 @@ func CopyFile(src, dst string) error {
 
 // 返回指定目录下的文件列表
 func ListFiles(path string, abs bool) []string {
-	if !IsExist(path) || !IsDir(path) {
+	if !Exist(path) || !IsDir(path) {
 		return nil
 	}
 
@@ -151,8 +166,8 @@ func ListFiles(path string, abs bool) []string {
 }
 
 // 返回指定目录下的所有文件列表，包括子目录下的文件
-func ListAllFiles(path string, abs bool) []string {
-	if !IsExist(path) || !IsDir(path) {
+func ListAll(path string, abs bool) []string {
+	if !Exist(path) || !IsDir(path) {
 		return nil
 	}
 
@@ -182,8 +197,8 @@ func ListAllFiles(path string, abs bool) []string {
 }
 
 // 删除文件
-func RemoveFile(path string) bool {
-	if !IsExist(path) {
+func Remove(path string) bool {
+	if !Exist(path) {
 		return true
 	}
 	err := os.Remove(path)
@@ -191,4 +206,16 @@ func RemoveFile(path string) bool {
 		return true
 	}
 	return false
+}
+
+// 在指定路径下查找文件
+func SearchFile(filename string, paths ...string) (fullpath string, err error) {
+	for _, path := range paths {
+		if fullpath = filepath.Join(path, filename); Exist(fullpath) {
+			return
+		}
+	}
+	fullpath = ""
+	err = errors.New(filename + " not fould in paths")
+	return
 }
