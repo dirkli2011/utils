@@ -10,6 +10,11 @@ import (
 )
 
 const (
+	format_datetime   = "2006-01-02 15:04:05"
+	format_filerotate = "/2006/01/02/15"
+)
+
+const (
 	LEVEL_DEBUG = iota
 	LEVEL_INFO
 	LEVEL_WARN
@@ -134,7 +139,7 @@ func Alarmf(format string, params ...interface{}) {
 
 func formater(str string, level string) []byte {
 	tag, evt := caller()
-	now := time.Now().Format("2006-01-02 15:04:05")
+	now := time.Now().Format(format_datetime)
 
 	var buffer bytes.Buffer
 	buffer.WriteString(now)

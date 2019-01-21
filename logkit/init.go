@@ -14,7 +14,7 @@ func init() {
 
 	logType = os.Getenv("logkit.type")
 	if logType == "" {
-		logType = "std"
+		logType = "async"
 	}
 
 	logPath = os.Getenv("logkit.path")

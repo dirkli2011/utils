@@ -16,7 +16,6 @@ type LoggerFile struct {
 
 func (self *LoggerFile) init(tag string) {
 	self.tag = tag
-	self.fileName = time.Now().Format("/2006/01/02/15")
 	self.lock = new(sync.Mutex)
 }
 
@@ -28,7 +27,7 @@ func (self *LoggerFile) write(str []byte) {
 }
 
 func (self *LoggerFile) openfile() {
-	fileName := time.Now().Format("/2006/01/02/15")
+	fileName := time.Now().Format(format_filerotate)
 	filePath := logPath + "/" + self.tag + fileName
 	if self.writer != nil && self.fileName == fileName && exist(filePath) {
 		return
@@ -48,6 +47,7 @@ func (self *LoggerFile) openfile() {
 }
 
 func (self *LoggerFile) flush() error {
+	self.free()
 	return nil
 }
 
