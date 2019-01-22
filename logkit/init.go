@@ -3,7 +3,8 @@ package logkit
 import (
 	"os"
 	"path/filepath"
-	"utils/env"
+
+	"github.com/dirkli2011/utils/env"
 )
 
 // logger配置读取和初始化
