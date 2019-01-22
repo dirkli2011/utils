@@ -3,36 +3,23 @@ package logkit
 import (
 	"os"
 	"path/filepath"
+	"utils/env"
 )
 
 // logger配置读取和初始化
 func init() {
-	logName = os.Getenv("logkit.name")
-	if logName == "" {
-		logName = "main"
-	}
+	logName = env.Get("logkit.name", "main")
+	logType = env.Get("logkit.type", "std")
+	logPath = env.Get("logkit.path", pwd())
+	logLevel = env.Get("logkit.level", "debug")
+	logEnv = env.Get("ENV", env.Get("USER"))
 
-	logType = os.Getenv("logkit.type")
-	if logType == "" {
-		logType = "async"
+	if logEnv == "online" {
+		// 线上不允许开debug
+		if logLevel == "debug" {
+			logLevel = "info"
+		}
 	}
-
-	logPath = os.Getenv("logkit.path")
-	if logPath == "" {
-		logPath = pwd()
-	}
-
-	logLevel = os.Getenv("logkit.level")
-	if logLevel == "" {
-		logLevel = "info"
-	}
-
-	logEnv = os.Getenv("ENV")
-	if logEnv == "" {
-		logEnv = os.Getenv("USER")
-		logLevel = "debug"
-	}
-
 	level = Level_Config[logLevel]
 
 	switch logType {
