@@ -8,14 +8,12 @@ import (
 )
 
 type LoggerFile struct {
-	tag      string
 	fileName string
 	lock     *sync.Mutex
 	writer   *os.File
 }
 
-func (self *LoggerFile) init(tag string) {
-	self.tag = tag
+func (self *LoggerFile) init() {
 	self.lock = new(sync.Mutex)
 }
 
@@ -28,7 +26,7 @@ func (self *LoggerFile) write(str []byte) {
 
 func (self *LoggerFile) openfile() {
 	fileName := time.Now().Format(format_filerotate)
-	filePath := logPath + "/" + self.tag + fileName
+	filePath := logPath + "/" + logName + fileName
 	if self.writer != nil && self.fileName == fileName && exist(filePath) {
 		return
 	}
@@ -42,8 +40,7 @@ func (self *LoggerFile) openfile() {
 			panic("logkit use file, but create logPath fail!!!")
 		}
 	}
-	writer, _ := os.OpenFile(filePath, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0644)
-	self.writer = writer
+	self.writer, _ = os.OpenFile(filePath, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0644)
 }
 
 func (self *LoggerFile) flush() error {

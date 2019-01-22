@@ -7,7 +7,7 @@ import (
 
 // logger配置读取和初始化
 func init() {
-	logName = os.Getenv("PRJ_NAME")
+	logName = os.Getenv("logkit.name")
 	if logName == "" {
 		logName = "main"
 	}
@@ -47,8 +47,7 @@ func init() {
 	default:
 		logger = new(LoggerStd)
 	}
-
-	logger.init(logName)
+	logger.init()
 }
 
 func pwd() string {

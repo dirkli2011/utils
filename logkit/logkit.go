@@ -2,7 +2,6 @@ package logkit
 
 import (
 	"bytes"
-	"fmt"
 	"runtime"
 	"strconv"
 	"strings"
@@ -12,6 +11,7 @@ import (
 const (
 	format_datetime   = "2006-01-02 15:04:05"
 	format_filerotate = "/2006/01/02/15"
+	default_tag       = "_default"
 )
 
 const (
@@ -41,10 +41,10 @@ var (
 )
 
 type ILogger interface {
-	init(tag string)
-	free()
-	flush() error
+	init()
 	write(str []byte)
+	flush() error
+	free()
 }
 
 func Free() {
@@ -55,99 +55,61 @@ func Flush() error {
 	return logger.flush()
 }
 
-// 字符串记录日志
-func Debug(str string) {
+func Debug(str string, tag ...string) {
 	if level > LEVEL_DEBUG {
 		return
 	}
-	logger.write(formater(str, "debug"))
+	logger.write(formater(str, "debug", tag...))
 }
 
-func Info(str string) {
+func Info(str string, tag ...string) {
 	if level > LEVEL_INFO {
 		return
 	}
-	logger.write(formater(str, "info"))
+	logger.write(formater(str, "info", tag...))
 }
 
-func Warn(str string) {
+func Warn(str string, tag ...string) {
 	if level > LEVEL_WARN {
 		return
 	}
-	logger.write(formater(str, "warn"))
+	logger.write(formater(str, "warn", tag...))
 }
 
-func Error(str string) {
+func Error(str string, tag ...string) {
 	if level > LEVEL_ERROR {
 		return
 	}
-	logger.write(formater(str, "error"))
+	logger.write(formater(str, "error", tag...))
 }
 
-func Fatal(str string) {
+func Fatal(str string, tag ...string) {
 	if level > LEVEL_FATAL {
 		return
 	}
-	logger.write(formater(str, "fatal"))
+	logger.write(formater(str, "fatal", tag...))
 }
 
 // 用于需要报警的日志
-func Alarm(str string) {
-	logger.write(formater(str, "alarm"))
+func Alarm(str string, tag ...string) {
+	logger.write(formater(str, "alarm", tag...))
 }
 
-// 格式化字符串记录日志
-func Debugf(format string, params ...interface{}) {
-	if level > LEVEL_DEBUG {
-		return
+func formater(str string, level string, args ...string) []byte {
+	tag := default_tag
+	if len(args) > 0 {
+		tag = args[0]
 	}
-	logger.write(formater(fmt.Sprintf(format, params...), "debug"))
-}
-
-func Infof(format string, params ...interface{}) {
-	if level > LEVEL_INFO {
-		return
-	}
-	logger.write(formater(fmt.Sprintf(format, params...), "info"))
-}
-
-func Warnf(format string, params ...interface{}) {
-	if level > LEVEL_WARN {
-		return
-	}
-	logger.write(formater(fmt.Sprintf(format, params...), "warn"))
-}
-
-func Errorf(format string, params ...interface{}) {
-	if level > LEVEL_ERROR {
-		return
-	}
-	logger.write(formater(fmt.Sprintf(format, params...), "error"))
-}
-
-func Fatalf(format string, params ...interface{}) {
-	if level > LEVEL_FATAL {
-		return
-	}
-	logger.write(formater(fmt.Sprintf(format, params...), "fatal"))
-}
-
-// 用于需要报警的日志
-func Alarmf(format string, params ...interface{}) {
-	logger.write(formater(fmt.Sprintf(format, params...), "alarm"))
-}
-
-func formater(str string, level string) []byte {
-	tag, evt := caller()
+	tags, who := caller(tag)
 	now := time.Now().Format(format_datetime)
 
 	var buffer bytes.Buffer
 	buffer.WriteString(now)
 	buffer.WriteString(" tag[")
-	buffer.WriteString(tag)
+	buffer.WriteString(tags)
 	buffer.WriteString("] ")
 	buffer.WriteString("caller[")
-	buffer.WriteString(evt)
+	buffer.WriteString(who)
 	buffer.WriteString("] [")
 	buffer.WriteString(level)
 	buffer.WriteString("] ")
@@ -156,8 +118,8 @@ func formater(str string, level string) []byte {
 	return buffer.Bytes()
 }
 
-func caller() (string, string) {
-	tag := logEnv + ",&" + logName
+func caller(tag string) (string, string) {
+	tags := logEnv + ",&" + tag
 	pc, file, line, _ := runtime.Caller(3)
 	name := runtime.FuncForPC(pc).Name()
 
@@ -165,5 +127,5 @@ func caller() (string, string) {
 	if idx > 0 {
 		file = file[idx:]
 	}
-	return tag, file + ":" + strconv.Itoa(line) + " " + name
+	return tags, file + ":" + strconv.Itoa(line) + " " + name
 }

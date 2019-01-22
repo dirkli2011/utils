@@ -8,7 +8,6 @@ import (
 )
 
 type LoggerAsync struct {
-	tag      string
 	fileName string
 	data     []string
 	lock     *sync.RWMutex
@@ -23,8 +22,7 @@ const (
 	syncDoing
 )
 
-func (self *LoggerAsync) init(tag string) {
-	self.tag = tag
+func (self *LoggerAsync) init() {
 	self.data = make([]string, 0, bufferLen)
 	self.lock = new(sync.RWMutex)
 	self.status = syncInit
@@ -51,7 +49,7 @@ func (self *LoggerAsync) write(str []byte) {
 
 func (self *LoggerAsync) openfile() {
 	fileName := time.Now().Format(format_filerotate)
-	filePath := logPath + "/" + self.tag + fileName
+	filePath := logPath + "/" + logName + fileName
 	if self.writer != nil && self.fileName == fileName && exist(filePath) {
 		return
 	}
@@ -65,8 +63,7 @@ func (self *LoggerAsync) openfile() {
 			panic("logkit use file, but create logPath fail!!!")
 		}
 	}
-	writer, _ := os.OpenFile(filePath, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0644)
-	self.writer = writer
+	self.writer, _ = os.OpenFile(filePath, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0644)
 }
 
 func (self *LoggerAsync) flush() error {

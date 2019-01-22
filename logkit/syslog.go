@@ -5,12 +5,10 @@ import (
 )
 
 type LoggerSyslog struct {
-	tag    string
 	writer *syslog.Writer
 }
 
-func (self *LoggerSyslog) init(tag string) {
-	self.tag = tag
+func (self *LoggerSyslog) init() {
 	writer, _ := syslog.New(syslog.LOG_INFO|syslog.LOG_LOCAL6, logName)
 	self.writer = writer
 }

@@ -7,12 +7,10 @@ import (
 )
 
 type LoggerStd struct {
-	tag    string
 	writer io.WriteCloser
 }
 
-func (self *LoggerStd) init(tag string) {
-	self.tag = tag
+func (self *LoggerStd) init() {
 	self.writer = os.Stderr
 }
 
