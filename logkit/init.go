@@ -14,11 +14,8 @@ func init() {
 	logLevel = env.Get("logkit.level", "debug")
 	logEnv = env.Get("ENV", env.Get("USER"))
 
-	if logEnv == "online" {
-		// 线上不允许开debug
-		if logLevel == "debug" {
-			logLevel = "info"
-		}
+	if logEnv == "online" && logLevel == "debug" {
+		logLevel = "info"
 	}
 	level = Level_Config[logLevel]
 
