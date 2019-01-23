@@ -51,12 +51,12 @@ func MustSet(key string, value string) error {
 func GetAll() map[string]string {
 	items := env.Items()
 	envs := make(map[string]string, env.Count())
-	
+
 	for k, v := range items {
 		switch k := k.(type) {
-			case "string":
+		case string:
 			switch v := v.(type) {
-				case "string":
+			case string:
 				envs[k] = v
 			}
 		}
