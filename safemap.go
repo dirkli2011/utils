@@ -57,3 +57,15 @@ func (this *SafeMap) Count() int {
 	defer this.lock.RUnlock()
 	return len(this.m)
 }
+
+func (this *SafeMap) Items() map[interface{}]interface{} {
+	this.lock.RLock()
+	defer this.lock.RUnlock()
+
+	r := make(map[interface{}]interface{})
+
+	for k, v := range this.m {
+		r[k] = v
+	}
+	return r
+}
