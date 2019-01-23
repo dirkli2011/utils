@@ -18,12 +18,16 @@ func init() {
 	}
 }
 
-func Get(key string, defVal string) string {
+func Get(key string, defVal ...string) string {
 	if val := env.Get(key); val != nil {
 		return val.(string)
 	}
 
-	return defVal
+	if len(defVal) > 0 {
+		return defVal[0]
+	}
+
+	return ""
 }
 
 func MustGet(key string) (string, error) {
