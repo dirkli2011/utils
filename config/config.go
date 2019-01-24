@@ -1,49 +1,33 @@
 package config
 
 import (
-	"fmt"
-	"os"
-	"reflect"
-	"time"
+	"utils/config/ini"
+	"utils/config/json"
+	"utils/env"
+	"utils/file"
 )
 
-type Configer interface {
-	Set(key, val string) error
-	String(key string) string
+type cfg struct {
+	ini  *ini.ConfigFile
+	json *json.ConfigJson
+	env  string
 }
 
-type Config interface {
-	Parse(key string) (Configer, error)
-	ParseData(data []byte) (Configer, error)
-}
+var Config = &cfg{}
 
-var cfgs = make(map[string]Config)
+func init() {
+	Config.env = env.Get("ENV")
 
-// 注册一个配置项到全局配置中
-func Register(name string, cfg Config) {
-	if cfg == nil {
-		panic("register cfg is nil")
+	// ini格式文件配置读取
+	iniPath := env.Get("CONF_PATH_INI")
+	if file.Exist(iniPath) {
+		Config.ini, _ = ini.ReadConfigFile(iniPath)
 	}
 
-	if _, ok := cfgs[name]; ok {
-		panic("cfg can't register twice!!! name is " + name)
+	// json格式文件配置读取
+	jsonPath := env.Get("CONF_PATH_JSON")
+	if file.Exist(jsonPath) {
+		Config.json, _ = json.ReadConfigFile(jsonPath)
 	}
-	cfgs[name] = cfg
-}
 
-// 创建一个具体的配置
-func NewConfig(conftype string, filename string) (Configer, error) {
-	cfg, ok := cfgs[conftype]
-	if !ok {
-		return nil, fmt.Errorf("cfg %q is unknow", conftype)
-	}
-	return cfg.Parse()
-}
-
-func NewConfigData(conftype string, data []byte) (Configer, error) {
-	cfg, ok := cfgs[conftype]
-	if !ok {
-		return nil, fmt.Errorf("cfg %q is unknow", conftype)
-	}
-	return cfg.ParseData()
 }

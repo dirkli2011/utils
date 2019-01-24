@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/dirkli2011/utils"
+	"utils"
 )
 
 var env *utils.SafeMap
