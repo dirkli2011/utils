@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"unsafe"
 )
 
 const (
@@ -59,43 +60,43 @@ func Debug(str string, tag ...string) {
 	if level > LEVEL_DEBUG {
 		return
 	}
-	logger.write(formater(str, "debug", tag...))
+	logger.write(formater(str2bytes(str), "debug", tag...))
 }
 
 func Info(str string, tag ...string) {
 	if level > LEVEL_INFO {
 		return
 	}
-	logger.write(formater(str, "info", tag...))
+	logger.write(formater(str2bytes(str), "info", tag...))
 }
 
 func Warn(str string, tag ...string) {
 	if level > LEVEL_WARN {
 		return
 	}
-	logger.write(formater(str, "warn", tag...))
+	logger.write(formater(str2bytes(str), "warn", tag...))
 }
 
 func Error(str string, tag ...string) {
 	if level > LEVEL_ERROR {
 		return
 	}
-	logger.write(formater(str, "error", tag...))
+	logger.write(formater(str2bytes(str), "error", tag...))
 }
 
 func Fatal(str string, tag ...string) {
 	if level > LEVEL_FATAL {
 		return
 	}
-	logger.write(formater(str, "fatal", tag...))
+	logger.write(formater(str2bytes(str), "fatal", tag...))
 }
 
 // 用于需要报警的日志
 func Alarm(str string, tag ...string) {
-	logger.write(formater(str, "alarm", tag...))
+	logger.write(formater(str2bytes(str), "alarm", tag...))
 }
 
-func formater(str string, level string, args ...string) []byte {
+func formater(str []byte, level string, args ...string) []byte {
 	tag := default_tag
 	if len(args) > 0 {
 		tag = args[0]
@@ -113,7 +114,7 @@ func formater(str string, level string, args ...string) []byte {
 	buffer.WriteString("] [")
 	buffer.WriteString(level)
 	buffer.WriteString("] ")
-	buffer.WriteString(str)
+	buffer.Write(str)
 	buffer.WriteString("\n")
 	return buffer.Bytes()
 }
@@ -128,4 +129,11 @@ func caller(tag string) (string, string) {
 		file = file[idx:]
 	}
 	return tags, file + ":" + strconv.Itoa(line) + " " + name
+}
+
+// 直接转换指针类型，数据不会被复制
+func str2bytes(s string) []byte {
+	x := (*[2]uintptr)(unsafe.Pointer(&s))
+	h := [3]uintptr{x[0], x[1], x[1]}
+	return *(*[]byte)(unsafe.Pointer(&h))
 }

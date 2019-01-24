@@ -6,6 +6,7 @@ import (
 	r "math/rand"
 	"reflect"
 	"time"
+	"unsafe"
 )
 
 // 任意类型转换为string
@@ -66,4 +67,15 @@ func RandString(n int, chars ...byte) string {
 		}
 	}
 	return string(bytes)
+}
+
+// 直接转换指针类型，数据不会被复制
+func Str2bytes(s string) []byte {
+	x := (*[2]uintptr)(unsafe.Pointer(&s))
+	h := [3]uintptr{x[0], x[1], x[1]}
+	return *(*[]byte)(unsafe.Pointer(&h))
+}
+
+func Bytes2str(b []byte) string {
+	return *(*string)(unsafe.Pointer(&b))
 }
