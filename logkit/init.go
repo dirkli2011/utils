@@ -13,7 +13,7 @@ func init() {
 	logType = env.Get("logkit.type", "std")
 	logPath = env.Get("logkit.path", pwd())
 	logLevel = env.Get("logkit.level", "debug")
-	logEnv = env.Get("ENV", env.Get("USER"))
+	logEnv = env.Get("logkit.env", env.Get("USER"))
 
 	if logEnv == "online" && logLevel == "debug" {
 		logLevel = "info"
