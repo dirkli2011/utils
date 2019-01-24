@@ -1,7 +1,7 @@
 package json
 
 import (
-	"utils/file"
+	"github.com/dirkli2011/utils/file"
 
 	"github.com/tidwall/gjson"
 )

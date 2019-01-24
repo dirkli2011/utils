@@ -1,10 +1,10 @@
 package config
 
 import (
-	"utils/config/ini"
-	"utils/config/json"
-	"utils/env"
-	"utils/file"
+	"github.com/dirkli2011/utils/config/ini"
+	"github.com/dirkli2011/utils/config/json"
+	"github.com/dirkli2011/utils/env"
+	"github.com/dirkli2011/utils/file"
 )
 
 type cfg struct {
