@@ -196,12 +196,24 @@ func ListAll(path string, abs bool) []string {
 	return items
 }
 
-// 删除文件
+// 删除文件,有子目录时会报错
 func Remove(path string) bool {
 	if !Exist(path) {
 		return true
 	}
 	err := os.Remove(path)
+	if err == nil {
+		return true
+	}
+	return false
+}
+
+// 删除全部
+func RemoveAll(path string) bool {
+	if !Exist(path) {
+		return true
+	}
+	err := os.RemoveAll(path)
 	if err == nil {
 		return true
 	}

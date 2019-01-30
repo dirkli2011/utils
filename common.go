@@ -1,17 +1,89 @@
 package utils
 
 import (
+	"crypto/md5"
 	"crypto/rand"
 	"fmt"
 	r "math/rand"
 	"reflect"
+	"strconv"
 	"time"
 	"unsafe"
 )
 
-// 任意类型转换为string
-func ToString(v interface{}) string {
-	return fmt.Sprintf("%v", v)
+func GetString(v interface{}) string {
+
+	switch result := v.(type) {
+	case string:
+		return result
+	case []byte:
+		return string(result)
+	default:
+		if v != nil {
+			return fmt.Sprint(result)
+		}
+	}
+	return ""
+}
+
+func GetInt(v interface{}) int {
+	switch result := v.(type) {
+	case int:
+		return result
+	case int32:
+		return int(result)
+	case int64:
+		return int(result)
+	default:
+		if d := GetString(v); d != "" {
+			value, _ := strconv.Atoi(d)
+			return value
+		}
+	}
+	return 0
+}
+
+func GetInt64(v interface{}) int64 {
+	switch result := v.(type) {
+	case int:
+		return int64(result)
+	case int32:
+		return int64(result)
+	case int64:
+		return result
+	default:
+		if d := GetString(v); d != "" {
+			value, _ := strconv.ParseInt(d, 10, 64)
+			return value
+		}
+	}
+	return 0
+}
+
+func GetFloat64(v interface{}) float64 {
+	switch result := v.(type) {
+	case float64:
+		return result
+	default:
+		if d := GetString(v); d != "" {
+			value, _ := strconv.ParseFloat(d, 64)
+			return value
+		}
+	}
+	return 0
+}
+
+func GetBool(v interface{}) bool {
+	switch result := v.(type) {
+	case bool:
+		return result
+	default:
+		if d := GetString(v); d != "" {
+			value, _ := strconv.ParseBool(d)
+			return value
+		}
+	}
+	return false
 }
 
 // 判断变量是否为空
@@ -78,4 +150,10 @@ func Str2bytes(s string) []byte {
 
 func Bytes2str(b []byte) string {
 	return *(*string)(unsafe.Pointer(&b))
+}
+
+func Md5(str string) string {
+	data := []byte(str)
+	has := md5.Sum(data)
+	return fmt.Sprintf("%x", has)
 }
