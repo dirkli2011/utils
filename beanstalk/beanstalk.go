@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
+	"os"
 	"time"
 
 	"github.com/dirkli2011/utils/logkit"
@@ -19,6 +21,7 @@ type JobExecuteor interface {
 
 type beanstalkd struct {
 	conn              string
+	options           *beanstalk.Options
 	Producer          *beanstalk.ProducerPool
 	Consumer          *beanstalk.ConsumerPool
 	ConsumerExecuteor JobExecuteor
@@ -30,14 +33,21 @@ func New(config string) (*beanstalkd, error) {
 	if _, ok := cf["conn"]; !ok {
 		return nil, errors.New("config has no conn key")
 	}
-
-	p, err := beanstalk.NewProducerPool([]string{cf["conn"]}, nil)
+	options := &beanstalk.Options{
+		ReserveTimeout:   time.Second,     // 等待超时
+		ReconnectTimeout: time.Second * 3, // 重连超时
+		ReadWriteTimeout: time.Second * 5, // 读写超时
+		InfoLog:          log.New(os.Stdout, "Info", log.LstdFlags),
+		ErrorLog:         log.New(os.Stderr, "Error", log.LstdFlags),
+	}
+	p, err := beanstalk.NewProducerPool([]string{cf["conn"]}, options)
 	if err != nil {
 		return nil, err
 	}
 
 	return &beanstalkd{
 		conn:     cf["conn"],
+		options:  options,
 		Producer: p,
 	}, nil
 }
@@ -49,7 +59,11 @@ func (self *beanstalkd) Put(tube string, data []byte, priority uint32, args ...i
 	}
 	putParams := &beanstalk.PutParams{priority, time.Duration(delay) * time.Second, TTR_TIMEOUT}
 	id, err := self.Producer.Put(tube, data, putParams)
-	logkit.Info(fmt.Sprintf("Created job with id: %d", id))
+	if id > 0 {
+		logkit.Info(fmt.Sprintf("Created job success with id: %d", id))
+	} else {
+		logkit.Info(fmt.Sprintf("Created job fail, errmsg=%s data=%s", err.Error(), string(data)))
+	}
 	return err
 }
 
@@ -67,7 +81,10 @@ func (self *beanstalkd) Len(tube string) (int, error) {
 }
 
 func (self *beanstalkd) Subscribe(tube string, obj JobExecuteor) *beanstalkd {
-	self.Consumer, _ = beanstalk.NewConsumerPool([]string{self.conn}, []string{tube}, nil)
+	self.Consumer, _ = beanstalk.NewConsumerPool([]string{self.conn}, []string{tube}, self.options)
+	if obj == nil {
+		panic("consumerExecuteor is nil")
+	}
 	self.ConsumerExecuteor = obj
 	return self
 }
@@ -86,5 +103,6 @@ func (self *beanstalkd) Wait() {
 				logkit.Warn(fmt.Sprintf("Failed job with id %d, data:%s", job.ID, string(job.Body)))
 				job.ReleaseWithParams(0, DELAY_TIME)
 			}
+		}
 	}
 }

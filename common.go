@@ -157,3 +157,14 @@ func Md5(str string) string {
 	has := md5.Sum(data)
 	return fmt.Sprintf("%x", has)
 }
+
+func ReverseStr(s string) string {
+	rs := []byte(s)
+	from, to := 0, len(rs)-1
+	for from < to {
+		rs[from], rs[to] = rs[to], rs[from]
+		from++
+		to--
+	}
+	return string(rs)
+}
