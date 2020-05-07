@@ -5,21 +5,21 @@ import (
 	"os"
 	"strings"
 
-	"github.com/dirkli2011/utils"
+	"github.com/dirkli2011/utils/cmap"
 )
 
-var env *utils.SafeMap
+var envMap cmap.ConcurrentMap
 
 func init() {
-	env = utils.NewSafeMap()
+	envMap = cmap.New()
 	for _, e := range os.Environ() {
 		splits := strings.Split(e, "=")
-		env.Set(splits[0], splits[1])
+		envMap.Set(splits[0], splits[1])
 	}
 }
 
 func Get(key string, defVal ...string) string {
-	if val := env.Get(key); val != nil {
+	if val, ok := envMap.Get(key); ok {
 		return val.(string)
 	}
 
@@ -31,7 +31,7 @@ func Get(key string, defVal ...string) string {
 }
 
 func MustGet(key string) (string, error) {
-	if val := env.Get(key); val != nil {
+	if val, ok := envMap.Get(key); ok {
 		return val.(string), nil
 	}
 	return "", fmt.Errorf("no env variable with %s", key)
@@ -39,7 +39,7 @@ func MustGet(key string) (string, error) {
 
 // 不会影响其他进程的环境变量
 func Set(key string, value string) {
-	env.Set(key, value)
+	envMap.Set(key, value)
 }
 
 // 会影响其他进程的环境变量
@@ -48,22 +48,19 @@ func MustSet(key string, value string) error {
 	if err != nil {
 		return err
 	}
-	env.Set(key, value)
+	envMap.Set(key, value)
 	return nil
 }
 
 func GetAll() map[string]string {
-	items := env.Items()
-	envs := make(map[string]string, env.Count())
-
-	for k, v := range items {
-		switch k := k.(type) {
-		case string:
-			switch v := v.(type) {
-			case string:
-				envs[k] = v
-			}
-		}
+	envs := make(map[string]string, envMap.Len())
+	fn := func(key string, value interface{}) {
+		envs[key] = value.(string)
 	}
+	envMap.IteratorBy(fn)
 	return envs
+}
+
+func Has(key string) bool {
+	return envMap.Exist(key)
 }

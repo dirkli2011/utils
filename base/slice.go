@@ -1,4 +1,4 @@
-package utils
+package base
 
 import (
 	"errors"
@@ -17,7 +17,8 @@ func InSliceWithError(s interface{}, v interface{}) (exist bool, err error) {
 		return
 	}
 
-	if reflect.TypeOf(s).String()[2:] != reflect.TypeOf(v).String() {
+	stype := reflect.TypeOf(s).String()[2:]
+	if stype != "interface {}" && stype != reflect.TypeOf(v).String() {
 		err = errors.New("type of param v is not match param s")
 		return
 	}
@@ -38,7 +39,7 @@ func InSlice(s interface{}, v interface{}) bool {
 	return exist
 }
 
-func UniqWithError(s interface{}) (r interface{}, err error) {
+func UniqSliceWithError(s interface{}) (r interface{}, err error) {
 	vs := reflect.ValueOf(s)
 	if vs.Kind() != reflect.Slice {
 		err = errors.New("param s must be a slice")
@@ -69,8 +70,8 @@ func UniqWithError(s interface{}) (r interface{}, err error) {
 }
 
 // 排重
-func Uniq(s interface{}) interface{} {
-	r, err := UniqWithError(s)
+func UniqSlice(s interface{}) interface{} {
+	r, err := UniqSliceWithError(s)
 	if err != nil {
 		r = s
 	}

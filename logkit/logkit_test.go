@@ -8,7 +8,6 @@ import (
 var s = strings.Repeat("abcd", 100)
 
 func BenchmarkLog(b *testing.B) {
-
 	for i := 0; i < b.N; i++ {
 		Info(s)
 	}

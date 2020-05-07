@@ -9,9 +9,9 @@ import (
 
 // logger配置读取和初始化
 func init() {
-	if _, err := env.MustGet("logkit.type"); err != nil {
-		return
-	}
+	// if _, err := env.MustGet("logkit.type"); err != nil {
+	// 	return
+	// }
 
 	logName = env.Get("logkit.name", "main")
 	logType = env.Get("logkit.type", "std")
@@ -49,19 +49,19 @@ func InitConf(conf map[string]string) {
 	if logEnv == "online" && logLevel == "debug" {
 		logLevel = "info"
 	}
-	level = level_Config[logLevel]
+	level = Level_Config[logLevel]
 
 	switch logType {
 	case "std":
-		logger = new(loggerStd)
+		logger = new(LoggerStd)
 	case "syslog":
-		logger = new(loggerSyslog)
+		logger = new(LoggerSyslog)
 	case "file":
-		logger = new(loggerFile)
+		logger = new(LoggerFile)
 	case "async":
-		logger = new(loggerAsync)
+		logger = new(LoggerAsync)
 	default:
-		logger = new(loggerStd)
+		logger = new(LoggerStd)
 	}
 	logger.init()
 }
