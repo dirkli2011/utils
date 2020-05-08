@@ -1,12 +1,14 @@
-package cache
+package memory
 
 import (
 	"testing"
 	"time"
+
+	"github.com/dirkli2011/utils/cache"
 )
 
 func TestCache(t *testing.T) {
-	memory, err := NewCache("memory", `{"interval": 1}`)
+	memory, err := cache.New("memory", `{"interval": 1}`)
 	if err != nil {
 		t.Error("init err")
 	}

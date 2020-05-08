@@ -1,10 +1,12 @@
-package cache
+package memory
 
 import (
 	"encoding/json"
 	"strconv"
 	"sync"
 	"time"
+
+	"github.com/dirkli2011/utils/cache"
 )
 
 var DefaultInterval = 60 //每分钟清理一次过期缓存
@@ -29,10 +31,10 @@ type MemoryCache struct {
 }
 
 func init() {
-	Register("memory", Newcache)
+	cache.Register("memory", Newcache)
 }
 
-func Newcache() Cache {
+func Newcache() cache.Cache {
 	return &MemoryCache{items: make(map[string]*MemoryCacheItem)}
 }
 
@@ -49,6 +51,7 @@ func (self *MemoryCache) Start(config string) error {
 	return nil
 }
 
+// 定期处理过期数据
 func (self *MemoryCache) check() {
 
 	if self.interval < 1 {
@@ -165,6 +168,8 @@ func (self *MemoryCache) Exist(key string) bool {
 
 func (self *MemoryCache) GetMulti(keys []string) (map[string]string, error) {
 	vals := make(map[string]string)
+	self.RLock()
+	defer self.RUnlock()
 	for _, key := range keys {
 		val, err := self.Get(key)
 		if err != nil {

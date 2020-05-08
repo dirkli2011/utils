@@ -31,7 +31,7 @@ func Register(name string, adapter InstaceFunc) {
 	}
 }
 
-func NewCache(name string, config string) (cache Cache, err error) {
+func New(name string, config string) (cache Cache, err error) {
 	insFunc, ok := adapters[name]
 	if !ok {
 		err = fmt.Errorf("unknow cache type: %s, may be not import???", name)
