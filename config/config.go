@@ -18,6 +18,7 @@ type cfg struct {
 var Config = &cfg{}
 
 func init() {
+	ini.DefaultSection = "common"
 	Reload()
 }
 
