@@ -1,7 +1,8 @@
 {
     "boolval": true,
     "app_port": 8888,
-    "mysql.host": "dev.com",
-    "mysql.port": 3306,
-    "user": "dirkli"
+    "mysql_host": "dev.com",
+    "mysql_port": 3306,
+    "domain": "{ENV.USER}.xxx.com",
+    "api_domain": "{ENV.USER}.api.xxx.com"
 }

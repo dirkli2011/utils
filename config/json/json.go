@@ -1,6 +1,10 @@
 package json
 
 import (
+	"regexp"
+	"strings"
+
+	"github.com/dirkli2011/utils/env"
 	"github.com/dirkli2011/utils/file"
 
 	"github.com/tidwall/gjson"
@@ -23,7 +27,8 @@ func ReadConfigFile(f string) (*ConfigJson, error) {
 	}
 
 	cfg := &ConfigJson{}
-	cfg.data = string(c)
+	cfg.data = parseEnv(c)
+
 	return cfg, nil
 }
 
@@ -49,4 +54,13 @@ func (c *ConfigJson) Float(path string) float64 {
 
 func (c *ConfigJson) Data() string {
 	return c.data
+}
+
+func parseEnv(b []byte) string {
+	s := string(b)
+	rst := regexp.MustCompile(`{ENV\.([_\d\w]+)}`).FindAllStringSubmatch(s, -1)
+	for _, v := range rst {
+		s = strings.Replace(s, v[0], env.Get(v[1]), 1)
+	}
+	return s
 }

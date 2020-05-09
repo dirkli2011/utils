@@ -1,10 +1,11 @@
 common: &common
-  ttt: "ttt"
+  sys: "api"
 
 dev:
   app_port: 8888
   boolval: true
-  mysql.host: dev.com
-  mysql.port: 3306
-  user: ENV.USER
+  mysql_host: dev.com
+  mysql_port: 3306
+  domain: "{ENV.USER}.xxx.com"
+  api_domain: "{ENV.USER}.{$sys}.xxx.com" #支持{$xxx}形式的变量引用
   <<: *common

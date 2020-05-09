@@ -358,8 +358,9 @@ func ReadConfigFile(f string) (*ConfigFile, error) {
 
 // parseEnv parse system ENV in values
 func parseEnv(s string) string {
-	if strings.HasPrefix(s, "ENV.") {
-		s = env.Get(strings.Replace(s, "ENV.", "", 1))
+	rst := regexp.MustCompile(`{ENV\.([_\d\w]+)}`).FindAllStringSubmatch(s, -1)
+	for _, v := range rst {
+		s = strings.Replace(s, v[0], env.Get(v[1]), 1)
 	}
 	return s
 }
