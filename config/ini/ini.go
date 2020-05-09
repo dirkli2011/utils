@@ -9,6 +9,8 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/dirkli2011/utils/env"
 )
 
 // ConfigFile config handler
@@ -251,7 +253,7 @@ func (c *ConfigFile) read(buf *bufio.Reader) error {
 			continue
 		case l[0] == '[' && l[len(l)-1] == ']': // new section
 			option = "" // reset multi-line value
-			section = strings.TrimSpace(l[1 : len(l)-1])
+			section = strings.ReplaceAll(strings.TrimSpace(l[1:len(l)-1]), " ", "")
 			c.AddSection(section)
 		case section == "": // not new section and no sectiondefined so far
 			return errors.New("Section not found: must start with section")
@@ -264,11 +266,13 @@ func (c *ConfigFile) read(buf *bufio.Reader) error {
 				value = strings.Trim(value, "\"")
 				value = strings.Trim(value, "'")
 				value = strings.Trim(value, "`")
+				value = strings.TrimSpace(value)
 				c.AddOption(section, option, value)
 			case section != "" && option != "":
 				// continuation of multi-line value
 				prev, _ := c.GetRawString(section, option)
 				value := strings.TrimSpace(stripComments(l))
+				value = strings.TrimSpace(value)
 				c.AddOption(section, option, prev+"\n"+value)
 			default:
 				return fmt.Errorf("Cound not parse line: %s", l)
@@ -279,7 +283,7 @@ func (c *ConfigFile) read(buf *bufio.Reader) error {
 	return nil
 }
 
-// parseEnv parse system ENV in values
+// 支持配置 ENV.XXX 的方式从环境变量读取值
 func (c *ConfigFile) parseEnv() {
 	for section := range c.data {
 		for option := range c.data[section] {
@@ -288,7 +292,6 @@ func (c *ConfigFile) parseEnv() {
 	}
 }
 
-// parseVariables parse variables in values
 func (c *ConfigFile) parseVariables() {
 	var hasVariable bool
 	var varSection, varOption string
@@ -325,6 +328,16 @@ func (c *ConfigFile) parseVariables() {
 	}
 }
 
+func ReadConfigData(data string) (*ConfigFile, error) {
+	c := NewConfigFile()
+	if err := c.read(bufio.NewReader(strings.NewReader(data))); err != nil {
+		return nil, err
+	}
+	c.parseEnv()
+	c.parseVariables()
+	return c, nil
+}
+
 // ReadConfigFile create a configFile handler from a config file and returns
 func ReadConfigFile(f string) (*ConfigFile, error) {
 	file, err := os.Open(f)
@@ -345,15 +358,8 @@ func ReadConfigFile(f string) (*ConfigFile, error) {
 
 // parseEnv parse system ENV in values
 func parseEnv(s string) string {
-	re, err := regexp.Compile("{{(?U:.+)}}")
-	if err != nil {
-		return "[ENV_PARSE_ERROR:" + err.Error() + "]"
+	if strings.HasPrefix(s, "ENV.") {
+		s = env.Get(strings.Replace(s, "ENV.", "", 1))
 	}
-	return re.ReplaceAllStringFunc(s, func(s string) string {
-		ss := strings.TrimSpace(s[2 : len(s)-2])
-		if len(ss) > 4 && ss[:4] == "ENV:" {
-			return os.Getenv(ss[4:])
-		}
-		return s
-	})
+	return s
 }

@@ -10,6 +10,12 @@ type ConfigJson struct {
 	data string
 }
 
+func ReadConfigData(data string) (*ConfigJson, error) {
+	cfg := &ConfigJson{}
+	cfg.data = data
+	return cfg, nil
+}
+
 func ReadConfigFile(f string) (*ConfigJson, error) {
 	c, err := file.GetContent(f)
 	if err != nil {
