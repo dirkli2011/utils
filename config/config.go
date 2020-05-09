@@ -65,3 +65,85 @@ func SetJsonData(data string) {
 		Config.json, _ = json.ReadConfigData(data)
 	}
 }
+
+// 读取所有配置文件
+func String(key string, defVal ...string) string {
+	switch {
+	case Config.ini != nil:
+		return IniString(key)
+	case Config.yaml != nil:
+		return YamlString(key)
+	case Config.json != nil:
+		return JsonString(key)
+	}
+
+	if len(defVal) > 0 {
+		return defVal[0]
+	}
+	return ""
+}
+
+func Int(key string, defVal ...int) int {
+	switch {
+	case Config.ini != nil:
+		return IniInt(key)
+	case Config.yaml != nil:
+		return YamlInt(key)
+	case Config.json != nil:
+		return JsonInt(key)
+	}
+
+	if len(defVal) > 0 {
+		return defVal[0]
+	}
+
+	return 0
+}
+
+func Int64(key string, defVal ...int64) int64 {
+	switch {
+	case Config.ini != nil:
+		return IniInt64(key)
+	case Config.yaml != nil:
+		return YamlInt64(key)
+	case Config.json != nil:
+		return JsonInt64(key)
+	}
+
+	if len(defVal) > 0 {
+		return defVal[0]
+	}
+	return 0
+}
+
+func Bool(key string, defVal ...bool) bool {
+	switch {
+	case Config.ini != nil:
+		return IniBool(key)
+	case Config.yaml != nil:
+		return YamlBool(key)
+	case Config.json != nil:
+		return JsonBool(key)
+	}
+
+	if len(defVal) > 0 {
+		return defVal[0]
+	}
+	return false
+}
+
+func Float(key string, defVal ...float64) float64 {
+	switch {
+	case Config.ini != nil:
+		return IniFloat(key)
+	case Config.yaml != nil:
+		return YamlFloat(key)
+	case Config.json != nil:
+		return JsonFloat(key)
+	}
+
+	if len(defVal) > 0 {
+		return defVal[0]
+	}
+	return 0
+}

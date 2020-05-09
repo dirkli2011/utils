@@ -7,6 +7,10 @@ import (
 
 var s = strings.Repeat("abcd", 100)
 
+func TestLog(t *testing.T) {
+	Info(s)
+}
+
 func BenchmarkLog(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		Info(s)

@@ -38,22 +38,27 @@ func TestConfig(t *testing.T) {
 			assert.Equal(t, expect, IniBool(key))
 			assert.Equal(t, expect, JsonBool(key))
 			assert.Equal(t, expect, YamlBool(key))
+			assert.Equal(t, expect, Bool(key))
 		case int, int32:
 			assert.Equal(t, expect, IniInt(key))
 			assert.Equal(t, expect, JsonInt(key))
 			assert.Equal(t, expect, YamlInt(key))
+			assert.Equal(t, expect, Int(key))
 		case int64:
 			assert.Equal(t, expect, IniInt64(key))
 			assert.Equal(t, expect, JsonInt64(key))
 			assert.Equal(t, expect, YamlInt64(key))
+			assert.Equal(t, expect, Int64(key))
 		case float32, float64:
 			assert.Equal(t, expect, IniFloat(key))
 			assert.Equal(t, expect, JsonFloat(key))
 			assert.Equal(t, expect, YamlFloat(key))
+			assert.Equal(t, expect, Float(key))
 		case string, []byte:
 			assert.Equal(t, expect, IniString(key))
 			assert.Equal(t, expect, JsonString(key))
 			assert.Equal(t, expect, YamlString(key))
+			assert.Equal(t, expect, String(key))
 		}
 	}
 }
