@@ -1,0 +1,7 @@
+{
+    "boolval": true,
+    "app_port": 8888,
+    "mysql.host": "dev.com",
+    "mysql.port": 3306,
+    "user": "dirkli"
+}

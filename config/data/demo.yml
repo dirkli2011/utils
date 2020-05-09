@@ -1,0 +1,10 @@
+common: &common
+  ttt: "ttt"
+
+dev:
+  app_port: 8888
+  boolval: true
+  mysql.host: dev.com
+  mysql.port: 3306
+  user: ENV.USER
+  <<: *common
