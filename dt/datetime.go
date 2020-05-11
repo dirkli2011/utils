@@ -5,6 +5,18 @@ import (
 	"time"
 )
 
+// 指数退避算法，产生一个需求范围内的随机数，用于重试
+func ExpBackOff(prev, max time.Duration) time.Duration {
+	if prev == 0 {
+		return time.Second
+	}
+
+	if prev > max/2 {
+		return max
+	}
+	return 2 * prev
+}
+
 // 当前时间戳
 func Now() int64 {
 	return time.Now().Unix()

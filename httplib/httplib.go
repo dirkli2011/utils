@@ -340,3 +340,17 @@ func check(req Request) (*Request, string, bool) {
 
 	return request, "", true
 }
+
+// 对response删除指定的cookie
+func DeleteCookies(w http.ResponseWriter, cookieNames ...string) {
+	for _, n := range cookieNames {
+		c := &http.Cookie{
+			Name:    n,
+			Value:   "",
+			Path:    "/",
+			MaxAge:  -1,
+			Expires: time.Time{},
+		}
+		http.SetCookie(w, c)
+	}
+}

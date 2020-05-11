@@ -19,10 +19,10 @@ func TestHttplib(t *testing.T) {
 		So(len(body) > 0, ShouldBeTrue)
 
 		// 简单Post请求
-		body, err = Post("http://www.xixiapp.com", map[string]string{
+		body, err = Post("http://www.baidu.com", map[string]string{
 			"hello":    "world",
 			"username": "dirkli",
-			"file1":    "@/tmp/readme.md",
+			"file1":    "@../readme.md",
 		})
 		if err != nil {
 			t.Log(err.Error())
@@ -33,7 +33,7 @@ func TestHttplib(t *testing.T) {
 		// 复杂请求，自定义request
 		req := Request{
 			Method:      METHOD_POST,
-			Url:         "http://www.xixiapp.com",
+			Url:         "http://www.baidu.com",
 			ConnTimeout: 1000,
 			RWTimeout:   2000,
 			PostType:    POST_XML,
@@ -54,13 +54,14 @@ func TestHttplib(t *testing.T) {
 		}
 		reqs["b"] = Request{
 			Method: METHOD_GET,
-			Url:    "http://www.xixiapp.com/xxx.html",
+			Url:    "http://www.baidu.com/xxx.html",
 		}
 		resps := make(map[interface{}]*Response)
 		for idx, res := range MultiCall(reqs) {
 			resps[idx] = res
 		}
 		So(resps["a"].Status, ShouldEqual, 200)
-		So(resps["b"].Status, ShouldEqual, 404)
+		So(resps["b"].Status, ShouldEqual, 200)
+
 	})
 }
