@@ -304,6 +304,7 @@ func check(req Request) (*Request, string, bool) {
 	request := &Request{
 		Headers: req.Headers,
 		Url:     req.Url,
+		Cookie:  req.Cookie,
 	}
 
 	if req.Method != METHOD_GET && req.Method != METHOD_POST {
